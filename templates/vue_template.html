@@ -1,0 +1,49 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+
+<div class="section" id="hello-vue">
+    <h1 class="title">This is a small Vue JS App</h1>
+    <h3 class="subtitle">Let's play a little bit with it</h3>
+    <div class="field is-grouped" v-for="raw in raws">
+        <div class="control">
+            <input class="input" type="text" v-bind:value="raw.message" disabled>
+        </div>
+        <div class="control">
+            <input class="input" type="number" v-bind:value="raw.quantity" disabled>
+        </div>
+    </div>
+    <div class="field is-grouped">
+        <div class="control">
+            <input class="input" type="text" v-model="input">
+        </div>
+        <div class="control">
+            <input class="input" type="number" v-model="quantity">
+        </div>
+        <div class="control">
+            <button class="button" v-on:click="addRaw">Add</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/vue@next"></script>
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                input: '',
+                quantity: 0,
+                raws: [
+                    {message: 'Producto 1', quantity:10},
+                ]
+            }
+        },
+        methods: {
+            addRaw() {
+                this.raws.push({message: this.input, quantity:this.quantity});
+                this.input = '';
+                this.quantity = 0;
+            }
+        },
+        delimiters: ['[[',']]']
+    });
+    app.mount('#hello-vue')
+</script>
