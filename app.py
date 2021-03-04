@@ -2,13 +2,31 @@
     This is a simple async server app, with examples of rest api endpoints, websockets handler and
     template rendering
 '''
+import os
+
 from aiohttp import web
 import aiohttp
+
 import aiohttp_jinja2
 import jinja2
+from gino.ext.aiohttp import Gino
+
+from models.models import User
+
+# Database Configuration
+PG_URL = "postgresql://{user}:{password}@{host}:{port}/{database}".format(
+    host=os.getenv("DB_HOST", "localhost"),
+    port=os.getenv("DB_PORT", 5432),
+    user=os.getenv("DB_USER", "postgres"),
+    password=os.getenv("DB_PASSWORD", "postgres"),
+    database=os.getenv("DB_DATABASE", "postgres"),
+)
 
 #INSTANTIATING WEB APP AND INITIALIZE ANOTHER STUFF
-app = web.Application()
+db = Gino()
+app = web.Application(middlewares=[db])
+db.init_app(app, dict(dsn=PG_URL)) #Initializing db
+
 '''
     We keep sockets stored in app so this memory strategy only works with one worker/instance, not for 
     production usage.
@@ -76,6 +94,10 @@ app.add_routes([
         web.get('/vue', vue_template)
     ])
 
+async def create(app_):
+    await db.gino.create_all()
+
+app.on_startup.append(create)
 
 #RUNNING SERVER
 if __name__ == '__main__':
