@@ -3,7 +3,7 @@
 <p>
     Inside the app.py file you are going to find everything you need to start learning <br/>
     Create a entry to database (: <input id="name"/> <button id="send_name">Send</button> <br/>
-    Want to trigger an api call? <a href="/me">Click here</a> <br/>
+    Want to trigger an api call? <a href="/users">Click here</a> <br/>
     Want to see a Vue JS app? <a href="/vue">Click here</a> <br/>
     Want to see a web socket working? Type a message here <input id="comment"/> <button id="send_comment">Send</button> <br/>
     If you open this site in another tab, messsages will appear in both, kind of a chat app :)
@@ -48,7 +48,7 @@
             },
             success: res => console.log(res)
         });
-        document.getElementById('comment').value = ''
+        document.getElementById('name').value = ''
     });
 
     //WS Logic

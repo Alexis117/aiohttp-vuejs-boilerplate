@@ -48,12 +48,16 @@ async def vue_template(request):
 async def create_new_user(request):
     data = await request.post()
     name = data.get('name')
-    await User.create(name=name)
-    return web.json_response({'success':True})
+    if name:
+        await User.create(name=name)
+        return web.json_response({'success':True})
+    return web.json_response({'success':False})
 
-async def get_me_data(request):
+async def get_users(request):
     users = await User.query.gino.all()
     users = [ user.to_dict() for user in users ]
+    if len(users) == 0:
+        return web.json_response('Not users found in database')
     return web.json_response(users)
 
 async def post_comment(request):
@@ -88,7 +92,7 @@ async def websocket_handler(request):
 #ROUTING VIEWS
 app.add_routes([
         web.get('/', template_rendering),
-        web.get('/me', get_me_data),
+        web.get('/users', get_users),
         web.post('/send_comment', post_comment),
         web.get('/ws', websocket_handler),
         web.get('/vue', vue_template),
