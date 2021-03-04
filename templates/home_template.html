@@ -2,6 +2,7 @@
 <h2>This is a boilerplate template for working with a lot of stuff</h2>
 <p>
     Inside the app.py file you are going to find everything you need to start learning <br/>
+    Create a entry to database (: <input id="name"/> <button id="send_name">Send</button> <br/>
     Want to trigger an api call? <a href="/me">Click here</a> <br/>
     Want to see a Vue JS app? <a href="/vue">Click here</a> <br/>
     Want to see a web socket working? Type a message here <input id="comment"/> <button id="send_comment">Send</button> <br/>
@@ -31,6 +32,19 @@
             url: '/send_comment',
             data: {
                 comment:comment
+            },
+            success: res => console.log(res)
+        });
+        document.getElementById('comment').value = ''
+    });
+
+    document.getElementById('send_name').addEventListener('click', function(event) {
+        const name = document.getElementById('name').value
+        $.ajax({
+            type: "POST",
+            url: '/create_new_user',
+            data: {
+                name:name
             },
             success: res => console.log(res)
         });

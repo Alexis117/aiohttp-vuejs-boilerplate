@@ -3,6 +3,7 @@
     template rendering
 '''
 import os
+import json
 
 from aiohttp import web
 import aiohttp
@@ -11,7 +12,7 @@ import aiohttp_jinja2
 import jinja2
 from gino.ext.aiohttp import Gino
 
-from models.models import User
+from models.models import db, User
 
 # Database Configuration
 PG_URL = "postgresql://{user}:{password}@{host}:{port}/{database}".format(
@@ -23,7 +24,6 @@ PG_URL = "postgresql://{user}:{password}@{host}:{port}/{database}".format(
 )
 
 #INSTANTIATING WEB APP AND INITIALIZE ANOTHER STUFF
-db = Gino()
 app = web.Application(middlewares=[db])
 db.init_app(app, dict(dsn=PG_URL)) #Initializing db
 
@@ -45,16 +45,16 @@ async def template_rendering(request):
 async def vue_template(request):
     return aiohttp_jinja2.render_template('vue_template.html', request, context={})
 
+async def create_new_user(request):
+    data = await request.post()
+    name = data.get('name')
+    await User.create(name=name)
+    return web.json_response({'success':True})
+
 async def get_me_data(request):
-    data = {
-        'name':'Alexis',
-        'last_name':'Piña Aquino',
-        'phone_number':'5581064181',
-        'age':26,
-        'company':'Chelita Software',
-        'role':'Software Engineer'
-    }
-    return web.json_response(data)
+    users = await User.query.gino.all()
+    users = [ user.to_dict() for user in users ]
+    return web.json_response(users)
 
 async def post_comment(request):
     data = await request.post()
@@ -91,7 +91,8 @@ app.add_routes([
         web.get('/me', get_me_data),
         web.post('/send_comment', post_comment),
         web.get('/ws', websocket_handler),
-        web.get('/vue', vue_template)
+        web.get('/vue', vue_template),
+        web.post('/create_new_user', create_new_user)
     ])
 
 async def create(app_):
