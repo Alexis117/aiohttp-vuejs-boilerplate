@@ -7,3 +7,4 @@ class User(db.Model):
 
     id = db.Column(db.BigInteger(), primary_key=True)
     name = db.Column(db.String())
+    last_name = db.Column(db.String())
